@@ -1,68 +1,91 @@
-#!/usr/bin/bash
+#! /bin/bash
 
-mkdir -p $HOME/.cache/pirokit
+if [ -f r3torrent2 ];
+then
+  rm r3torrent2
+fi
+hos="$(hostname)"
 
+sleep 1
+clear
+echo "______ _____ _                            _   "
+echo "| ___ |____ | |                          | |  "
+echo "| |_/ /   / | |_ ___  _ __ _ __ ___ _ __ | |_ "
+echo "|    /    \ | __/ _ \| '__| '__/ _ | '_ \| __|"
+echo "| |\ \.___/ | || (_) | |  | | |  __| | | | |_ "
+echo "\_| \_\____/ \__\___/|_|  |_|  \___|_| |_|\__|"
+echo "      ....MIT license: $hos..................."
+echo " ............piracy is illegal................."
+
+# stores templates for querrying
+
+
+mkdir -p $HOME/.cache/r3torrent
+
+#query
 if [ -z $1 ]; then
   query=$(echo "" | dmenu -p "Search Torrent: ")
 else
   query=$1
 fi
 
+# site to query
 baseurl="https://1337x.to"
-cachedir="$HOME/.cache/pirokit"
+cachedir="$HOME/.cache/r3torrent"
+
+#reginng query
 query="$(sed 's/ /+/g' <<<$query)"
 
-#curl -s https://1337x.to/category-search/$query/Movies/1/ > $cachedir/tmp.html
+#store template page
 curl -s https://1337x.to/search/$query/1/ > $cachedir/tmp.html
 
-# Get Titles
+# show titles from templates
 grep -o '<a href="/torrent/.*</a>' $cachedir/tmp.html |
   sed 's/<[^>]*>//g' > $cachedir/titles.bw
-
 result_count=$(wc -l $cachedir/titles.bw | awk '{print $1}')
+
+
 if [ "$result_count" -lt 1 ]; then
   notify-send "😔 No Result found. Try again 🔴"
   exit 0
 fi
 
+# getting torrent link and printing 
 
-# Seeders and Leechers
+
 grep -o '<td class="coll-2 seeds.*</td>\|<td class="coll-3 leeches.*</td>' $cachedir/tmp.html |
   sed 's/<[^>]*>//g' | sed 'N;s/\n/ /' > $cachedir/seedleech.bw
-
-# Size
 grep -o '<td class="coll-4 size.*</td>' $cachedir/tmp.html |
   sed 's/<span class="seeds">.*<\/span>//g' |
   sed -e 's/<[^>]*>//g' > $cachedir/size.bw
-
-# Links
 grep -E '/torrent/' $cachedir/tmp.html |
   sed -E 's#.*(/torrent/.*)/">.*/#\1#' |
   sed 's/td>//g' > $cachedir/links.bw
-
-
-
-# Clearning up some data to display
 sed 's/\./ /g; s/\-/ /g' $cachedir/titles.bw |
   sed 's/[^A-Za-z0-9 ]//g' | tr -s " " > $cachedir/tmp && mv $cachedir/tmp $cachedir/titles.bw
 
 awk '{print NR " - ["$0"]"}' $cachedir/size.bw > $cachedir/tmp && mv $cachedir/tmp $cachedir/size.bw
 awk '{print "[S:"$1 ", L:"$2"]" }' $cachedir/seedleech.bw > $cachedir/tmp && mv $cachedir/tmp $cachedir/seedleech.bw
-
-# Getting the line number
 LINE=$(paste -d\   $cachedir/size.bw $cachedir/seedleech.bw $cachedir/titles.bw |
   dmenu -i -l 25 |
   cut -d\- -f1 |
   awk '{$1=$1; print}')
-
 url=$(head -n $LINE $cachedir/links.bw | tail -n +$LINE)
 fullURL="${baseurl}${url}/"
-
 # Requesting page for magnet link
 curl -s $fullURL > $cachedir/tmp.html
-magnet=$(grep -Po "magnet:\?xt=urn:btih:[a-zA-Z0-9]*" $cachedir/tmp.html | head -n 1) 
+magnet=$(grep -Po "magnet:\?xt=urn:btih:[[:alnum:][:punct:]]*" $cachedir/tmp.html | head -n 1)
+deluge=$(echo "$magnet" | tr -d \")
+#deluge-console add "$deluge"
+deluge $deluge
+#rtorrent $magnet
 
-deluge-console add "$magnet"
+clear
+echo " continue downloading y/n"
+read pinky
 
-# Simple notification
-notify-send "⬇️  Start downloading File 📁"
+if [ $pinky -eq "y" ]
+then
+	./r3torrent
+else
+	exit

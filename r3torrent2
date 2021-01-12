@@ -1,0 +1,89 @@
+#! /usr/bin/bash
+
+#.......THE FOLLOWING SCRIPT HAS BEEN MODIFIED.................
+#.........to work on all apt systems by........................
+#..............................................................
+#               +-++-++-++-++-++-++-++-+ 
+#               |R||3||K||4||S||1||V||3| 
+#               +-++-++-++-++-++-++-++-+ 
+#..............................................................
+#......................enjoy...................................
+
+
+echo "Executing r3 ...................file $0"
+sleep 1
+echo "registering $(hostname)"
+
+hos="$(hostname)"
+
+sleep 1
+clear
+echo "______ _____ _                            _   "
+echo "| ___ |____ | |                          | |  "
+echo "| |_/ /   / | |_ ___  _ __ _ __ ___ _ __ | |_ "
+echo "|    /    \ | __/ _ \| '__| '__/ _ | '_ \| __|"
+echo "| |\ \.___/ | || (_) | |  | | |  __| | | | |_ "
+echo "\_| \_\____/ \__\___/|_|  |_|  \___|_| |_|\__|"
+echo "      ....MIT license: $hos..................."
+echo " ............piracy is illegal................."
+
+
+echo "you can comment deluge-console to use it or rtorrent........"
+
+
+
+#Dependancy check dmenu
+if !command -v deluge &> /dev/null 
+then
+	echo ".............installing dependancies"
+	echo "install may require sudo password, click yes to install"
+	sudo apt install deluge
+else
+	echo "..............................check passed"
+	sleep 1
+	clear
+fi
+#Dependancy check deluge
+if !command -v dmenu &> /dev/null 
+then
+	echo ".............installing dependancies"
+	sudo apt install dmenu
+else
+	echo "..............................check passed"
+	sleep 1
+	clear
+fi
+{
+		echo ' #! /bin/bash '
+		echo ' if !command -v deluge-console &> /dev/null '
+		echo ' then '
+			echo ' echo ".............installing dependancies" '
+			echo ' sudo apt install deluge-console '
+		echo ' else '
+			echo ' echo "..............................check passed" '
+			echo ' sleep 1 '
+			echo ' clear '
+		echo ' fi '
+		
+} >>optional
+#Dependancy check final dependancy [optional]
+echo "Due to deluge-console update fail in python3/this package works in python3.7 least, Do you want to install anyway yes/no"
+
+read answr
+
+
+if [ $answr == "yes" ];
+then
+	bash optional
+
+else
+	if [ $asnwr == "no" ];
+	then
+	rm -rf optional
+	echo "additional packages will not be installed"
+	fi
+fi
+mv teskit r3torrent
+chmod +x r3torrent
+./r3torrent
+

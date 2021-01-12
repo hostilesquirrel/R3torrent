@@ -1,24 +1,31 @@
-# Pirokit
+# R3torrent
 
-This script is used to web scrape a very popular torrent site 1337x.to to search torrents using bash, and you can represent scrapped torrent data in fzf / dmenu / rofi sort of like menu to select which torrent to download. 
+Use of graphical deluge to comple download
 
-## Installation
+# How to run
 
-Place this script where you keep your scripts.
-
-```bash
-chmod +x pirokit
-```
-
-## Usage
-```
-pirokit "search query"
-```
-or if you use without search query it's by default going to ask take input with dmenu.
+./r3torrent2
 
 
-## Contributing
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+initial install lets you choose what to install
 
-## License
-[MIT](https://choosealicense.com/licenses/mit/)
+# Daily run
+
+./r3torrent
+
+for constant opening
+
+mv r3torrent /usr/bin
+
+and restart
+
+# How to Use
+
+> On running dmenu will appear at the top
+> Type your query (awsome - menu drops)
+> On select deluge opens
+> Cool add
+
+
+# Based on Pirokit
+
