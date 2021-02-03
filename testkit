@@ -16,7 +16,9 @@ echo "| |\ \.___/ | || (_) | |  | | |  __| | | | |_ "
 echo "\_| \_\____/ \__\___/|_|  |_|  \___|_| |_|\__|"
 echo "      ....MIT license: $hos..................."
 echo " ............piracy is illegal................."
-
+echo "    TYPE AND HIT ENTER SEARCH BAR ABOVE         "
+echo ".............................................."
+echo " ****press ctrl +c, and type y to download or n to exit            ****"
 # stores templates for querrying
 
 
@@ -29,6 +31,7 @@ else
   query=$1
 fi
 
+{
 # site to query
 baseurl="https://1337x.to"
 cachedir="$HOME/.cache/r3torrent"
@@ -77,15 +80,18 @@ curl -s $fullURL > $cachedir/tmp.html
 magnet=$(grep -Po "magnet:\?xt=urn:btih:[[:alnum:][:punct:]]*" $cachedir/tmp.html | head -n 1)
 deluge=$(echo "$magnet" | tr -d \")
 #deluge-console add "$deluge"
+
 deluge $deluge
 #rtorrent $magnet
+} &> /dev/null
 
-clear
+
 echo " continue downloading y/n"
 read pinky
 
-if [ $pinky -eq "y" ]
+if [ $pinky == "y" ]
 then
 	./r3torrent
 else
 	exit
+fi
